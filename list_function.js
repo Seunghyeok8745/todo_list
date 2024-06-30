@@ -58,9 +58,8 @@ function addToDo() {
   mainInput.value = '';
   console.log(task);
   if (task.taskInput == '') {
-    alert(`Please add your task!`);
+    alert(`할일을 입력 해주세요!`);
     toDoArray.pop(task);
-    // addList.disabled = true;
   }
   mode = 'all';
   render();
@@ -101,8 +100,6 @@ function toggleComplete(id) {
   for (let i = 0; i < toDoArray.length; i++) {
     if (toDoArray[i].id == id) {
       toDoArray[i].isComplete = !toDoArray[i].isComplete;
-      // true와 false 전환이 가능
-      // !의미는 아니다
       break;
     }
   }
