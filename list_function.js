@@ -64,13 +64,16 @@ function addToDo() {
   mode = 'all';
   render();
 }
+// 완료된 done리스트도 all에 나타나게 하고 싶다
 
 function render() {
   let list = [];
   if (mode === 'all') {
     list = toDoArray;
-  } else if (mode === 'ongoing' || mode === 'done') {
-    list = ongoingList;
+  } else if (mode === 'ongoing') {
+    list = toDoArray.filter((task) => !task.isComplete);
+  } else if (mode === 'done') {
+    list = toDoArray.filter((task) => task.isComplete);
   }
 
   let resultHTML = '';
@@ -109,26 +112,9 @@ function toggleComplete(id) {
 
 function filter(event) {
   mode = event.target.id;
-  ongoingList = [];
-  if (mode === 'all') {
-    render();
-  } else if (mode === 'ongoing') {
-    for (let i = 0; i < toDoArray.length; i++) {
-      if (toDoArray[i].isComplete === false) {
-        ongoingList.push(toDoArray[i]);
-      }
-    }
-    render();
-    console.log(ongoingList);
-  } else if (mode === 'done') {
-    for (let i = 0; i < toDoArray.length; i++) {
-      if (toDoArray[i].isComplete === true) {
-        ongoingList.push(toDoArray[i]);
-      }
-    }
-    render();
-  }
+  render();
 }
+
 function randomIDGenerate() {
   return '_' + Math.random().toString(36).substr(2, 9);
 }
