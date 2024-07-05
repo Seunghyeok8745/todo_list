@@ -3,7 +3,6 @@ let mainInput = document.getElementById('todo-input');
 let toDoArray = [];
 let tabs = document.querySelectorAll('.task-tabs .menu');
 let mode = 'all';
-let ongoingList = [];
 let underLine = document.querySelector('.task-tabs .under-line');
 
 addList.addEventListener('click', addToDo);
@@ -15,15 +14,15 @@ mainInput.addEventListener('keypress', function (event) {
     addToDo();
   }
 });
-for (let i = 1; i < tabs.length; i++) {
-  tabs[i].addEventListener('click', function (event) {
-    filter(event);
-  });
-}
 
-tabs.forEach((menu) =>
-  menu.addEventListener('click', (e) => horizontalIndicator(e))
-);
+tabs.forEach((menu) => {
+  menu.addEventListener('click', (e) => {
+    filter(e);
+    horizontalIndicator(e);
+    changeActive(e.currentTarget);
+  });
+});
+
 function horizontalIndicator(e) {
   underLine.style.left = e.currentTarget.offsetLeft + 'px';
   underLine.style.width = e.currentTarget.offsetWidth + 'px';
@@ -31,20 +30,10 @@ function horizontalIndicator(e) {
     e.currentTarget.offsetTop + e.currentTarget.offsetHeight + 'px';
 }
 
-console.log(tabs);
-
-tabs.forEach((menu) => {
-  menu.addEventListener('click', function () {
-    tabs.forEach((tab) => tab.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
-
 function changeActive(clickedMenu) {
   document.querySelectorAll('.menu').forEach((menu) => {
     menu.classList.remove('active');
   });
-
   clickedMenu.classList.add('active');
 }
 
@@ -54,17 +43,15 @@ function addToDo() {
     taskInput: mainInput.value,
     isComplete: false,
   };
+  if (task.taskInput == '') {
+    alert('할일을 입력 해주세요!');
+    return;
+  }
   toDoArray.push(task);
   mainInput.value = '';
-  console.log(task);
-  if (task.taskInput == '') {
-    alert(`할일을 입력 해주세요!`);
-    toDoArray.pop(task);
-  }
   mode = 'all';
   render();
 }
-// 완료된 done리스트도 all에 나타나게 하고 싶다
 
 function render() {
   let list = [];
@@ -78,22 +65,22 @@ function render() {
 
   let resultHTML = '';
   for (let i = 0; i < list.length; i++) {
-    if (list[i].isComplete == true) {
+    if (list[i].isComplete) {
       resultHTML += `<div id="task-list" class="transition">
-  <div class="task-done">${list[i].taskInput}</div>
-  <div class="button-container">
-  <i class="fa-solid fa-rotate-left" id = "return" onclick="toggleComplete('${list[i].id}')"></i>
-  <i class="fa-solid fa-x" id = "trash" onclick = "deleteToggle('${list[i].id}')"></i>
-  </div>
-  </div>`;
+        <div class="task-done">${list[i].taskInput}</div>
+        <div class="button-container">
+          <i class="fa-solid fa-rotate-left" id="return" onclick="toggleComplete('${list[i].id}')"></i>
+          <i class="fa-solid fa-x" id="trash" onclick="deleteToggle('${list[i].id}')"></i>
+        </div>
+      </div>`;
     } else {
       resultHTML += `<div id="task-list" class="transition2">
-    <div class= "task-done2">${list[i].taskInput}</div>
-    <div class="button-container">
-    <i class="fa-solid fa-check" id = "check" onclick="toggleComplete('${list[i].id}')"></i>
-    <i class="fa-solid fa-x" id = "trash" onclick = "deleteToggle('${list[i].id}')"></i>
-    </div>
-    </div>`;
+        <div class="task-done2">${list[i].taskInput}</div>
+        <div class="button-container">
+          <i class="fa-solid fa-check" id="check" onclick="toggleComplete('${list[i].id}')"></i>
+          <i class="fa-solid fa-x" id="trash" onclick="deleteToggle('${list[i].id}')"></i>
+        </div>
+      </div>`;
     }
   }
   document.getElementById('task-board').innerHTML = resultHTML;
@@ -106,7 +93,6 @@ function toggleComplete(id) {
       break;
     }
   }
-  console.log(toDoArray);
   render();
 }
 
@@ -126,13 +112,5 @@ function deleteToggle(id) {
       break;
     }
   }
-  if (mode === 'all') {
-    render();
-  } else if (mode === 'ongoing') {
-    ongoingList = toDoArray.filter((item) => item.isComplete === false);
-    render();
-  } else if (mode === 'done') {
-    ongoingList = toDoArray.filter((item) => item.isComplete === true);
-    render();
-  }
+  render();
 }
